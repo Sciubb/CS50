@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<!-- saved from url=(0060)https://sandbox.cs50.io/a670d1a7-cd9e-4363-8890-a3d06f5449da -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link href="https://sandbox.cs50.io/static/favicon-415b25f8182a191ec3ef975d8785fb41b53c778e54ee57df13c4ec0afffcc019.png" rel="shortcut icon">
+
+        <link crossorigin="anonymous" href="./CS50 Sandbox_files/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" rel="stylesheet">
+
+        <link crossorigin="anonymous" href="./CS50 Sandbox_files/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" rel="stylesheet">
+
+        <script crossorigin="anonymous" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" src="./CS50 Sandbox_files/jquery-3.3.1.min.js.download"></script>
+        <script crossorigin="anonymous" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" src="./CS50 Sandbox_files/popper.min.js.download"></script>
+        <script crossorigin="anonymous" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" src="./CS50 Sandbox_files/bootstrap.min.js.download"></script>
+
+        <script src="./CS50 Sandbox_files/autosize.min.js.download"></script>
+
+        <script src="./CS50 Sandbox_files/moment-with-locales.min.js.download"></script>
+
+        <script src="./CS50 Sandbox_files/clipboard.min.js.download"></script>
+
+        <script>
+
+            
+
+    
+
+    $(function() {
+
+        // bitlink
+        let bitlink = "";
+
+        // name
+        let name = "";
+
+        // Before #bitly is shown
+        $('#bitly').on('show.bs.dropdown', function() {
+            if (!bitlink) {
+                $.post(window.location.pathname + '/bitlink', function(data) {
+                    $('#bitlink').val(bitlink = data.trim());
+                    select();
+                }).fail(function() {
+                    $('#bitly [data-toggle=dropdown]').dropdown('hide');
+                });
+            }
+        });
+
+        // After #bitly is shown
+        $('#bitly').on('shown.bs.dropdown', function() {
+
+            // Highlight URL
+            if (bitlink) {
+                $('#bitlink').val(bitlink);
+                select();
+            }
+
+            // Listen for copy
+            let clipboard = new Clipboard('#clippy');
+            clipboard.on('success', function(e) {
+                $('#bitly [data-toggle=dropdown]').dropdown('hide');
+            });
+        });
+
+        // Dismiss dropdowns if iframe clicked
+        // http://www.jotform.org/jquery-codes/jquery-detect-click-outside-iframe/
+        $(window).on('blur', function() {
+            $('*[data-toggle=dropdown]').dropdown('hide');
+        });
+
+        // Enable tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+
+        // Before #menu is shown
+        $('#menu').on('show.bs.dropdown', function() {
+            $('#name').removeClass('is-invalid');
+            $('#name').val(name);
+        });
+
+        // After #menu is shown
+        $('#menu').on('shown.bs.dropdown', function() {
+            $('#name').select().focus();
+        });
+
+        // When name is set
+        $('#menu form').on('submit', function(eventObject) {
+            eventObject.preventDefault();
+            $.post(window.location.pathname + '/name', {name: $('#name').val()}, function(data) {
+                name = data.trim();
+                $('#menu [data-toggle=dropdown]').dropdown('hide');
+            }).fail(function() {
+                $('#name').addClass('is-invalid');
+                $('#name').select().focus();
+            });
+        });
+
+        // Select bitlink
+        function select() {
+            $('#clippy').removeAttr('disabled').removeClass('disabled').removeAttr('aria-disabled');
+            $('#bitlink').focus().select();
+        };
+    });
+
+
+
+        </script>
+
+        <script>
+
+            // Enable tooltips
+            $(function() {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+
+        </script>
+
+        <style>
+
+            
+
+    html, body {
+        height: 100%;
+    }
+
+    nav {
+        background-color: rgb(30, 35, 37);
+    }
+
+    .navbar-brand {
+        margin-right: 0;
+    }
+
+    iframe {
+        border: 0;
+        min-height: 151px;
+        width: 100%;
+    }
+
+    /* https://stackoverflow.com/a/45642449/5156190 */
+    .flex-grow {
+        flex: 1 0 auto;
+    }
+
+    .btn-link, .btn-link:hover {
+        color: #dc3545;
+    }
+
+    #bitly .dropdown-menu {
+        min-width: 300px;
+    }
+
+    #bitly .dropdown-toggle::after {
+        display: none;
+    }
+
+    #menu .dropdown-menu {
+        min-width: 420px;
+    }
+
+    .dropdown-menu small {
+        display: inline-block;
+        line-height: 1.25;
+    }
+
+
+
+        </style>
+
+        <title>CS50 Sandbox</title>
+
+    </head>
+
+    <body>
+
+        
+
+    <div class="d-flex flex-column h-100">
+        <nav class="navbar navbar-dark">
+            <a class="navbar-brand mr-auto" href="https://sandbox.cs50.io/">CS50 Sandbox</a>
+            <div class="dropdown mr-2" id="bitly">
+                <button aria-expanded="false" aria-haspopup="true" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" id="bitly-button" type="button">Share</button>
+                <div aria-labelledby="bitly-button" class="dropdown-menu dropdown-menu-right mt-2">
+                    <form class="px-4 py-2">
+                        <div class="input-group mt-1">
+                            <input class="form-control form-control text-right" id="bitlink" readonly="" placeholder="Shortening URL..." type="text">
+                            <div class="input-group-append">
+                                <button aria-disabled="true" class="btn btn btn-secondary disabled ml-2" data-clipboard-target="#bitlink" disabled="" id="clippy" type="button">
+                                    <i class="far fa-clipboard"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-right">
+                            <small>Anyone who visits this URL (or the longer URL in your browser's address bar) will be redirected to a copy of this sandbox. Any changes you make to this sandbox thereafter will not be reflected in that copy.</small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="dropdown" id="menu">
+                <button aria-expanded="false" aria-haspopup="true" class="btn btn-dark btn-sm dropdown-toggle" data-toggle="dropdown" id="menu-button" type="button"></button>
+                <div aria-labelledby="menu-button" class="dropdown-menu dropdown-menu-right mt-2">
+                    <form class="px-4 py-1">
+                        <div class="form-group mb-0">
+                            <label for="name"><strong>Name for sandbox</strong></label>
+                            <div class="input-group">
+                                <input autocomplete="off" class="form-control form-control-sm" id="name" maxlength="64" name="name" placeholder="a670d1a7-cd9e-4363-8890-a3d06f5449da" type="text">
+                                <div class="input-group-append">
+                                    <button class="btn btn-secondary btn-sm ml-2">Set</button>
+                                </div>
+                            </div>
+                            <small>To distinguish it among <a href="https://sandbox.cs50.io/recent" target="_blank">recent sandboxes</a>.</small>
+                        </div>
+                    </form>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" data-html="true" data-placement="left" data-title="Logged in as &lt;strong&gt;Sciubb&lt;/strong&gt;" data-toggle="tooltip" href="https://sandbox.cs50.io/logout" data-original-title="" title="">Log out</a>
+                </div>
+            </div>
+        </nav>
+        <iframe allowfullscreen="" class="d-flex flex-column flex-grow" src="./CS50 Sandbox_files/C1BF690768A0CEFA8BEC9C1E0191B646.html"></iframe>
+    </div>
+
+
+
+    
+
+</body></html>
